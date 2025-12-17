@@ -33,6 +33,6 @@ This project performs **multi-class skin disease classification** using a
 This project is for **academic and research purposes only**.
 Not a medical diagnostic system.
 
-Thank you
+
 ---
 
