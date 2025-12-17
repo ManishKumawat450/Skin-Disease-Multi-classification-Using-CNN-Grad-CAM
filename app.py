@@ -4,16 +4,10 @@ import numpy as np
 import cv2
 from PIL import Image
 
-# =============================
-# Load model
-# =============================
 model = tf.keras.models.load_model("skin_resnet50_safe.h5")
 base_model = model.get_layer("resnet50")
 last_conv_layer = base_model.get_layer("conv5_block3_out")
-
-# =============================
 # Class names
-# =============================
 class_names = [
     'Eczema',
     'Warts Molluscum and other Viral Infections',
@@ -27,18 +21,13 @@ class_names = [
     'Tinea Ringworm Candidiasis and other Fungal Infections'
 ]
 
-# =============================
-# Preprocess
-# =============================
+
 def preprocess(img):
     img = img.resize((224, 224))
     arr = np.array(img)
     arr = np.expand_dims(arr, axis=0)
     return tf.keras.applications.resnet.preprocess_input(arr)
 
-# =============================
-# Grad-CAM
-# =============================
 def gradcam(img_array):
     with tf.GradientTape() as tape:
         conv_out = last_conv_layer(base_model(img_array, training=False))
@@ -63,9 +52,7 @@ def gradcam(img_array):
 
     return heatmap, int(idx), preds.numpy()[0]
 
-# =============================
-# Prediction function
-# =============================
+
 def predict(image):
     img_array = preprocess(image)
     heatmap, idx, probs = gradcam(img_array)
@@ -80,9 +67,6 @@ def predict(image):
     return overlay, class_names[idx]
 
 
-# =============================
-# Gradio UI (IMPROVED ONLY UI)
-# =============================
 
 CSS = """
 body {
@@ -181,9 +165,6 @@ with gr.Blocks(css=CSS) as app:
 
         
 
-    # =============================
-    # Button Logic (OUTSIDE layout)
-    # =============================
     submit_btn.click(
         fn=predict,
         inputs=input_image,
@@ -226,3 +207,4 @@ app.launch(
     server_name="127.0.0.1",
     server_port=7860
 )
+
